@@ -21,9 +21,49 @@ function installPrintOverride() {
   // Service workers work correctly in Electron 29+ and are safe for a kiosk app
   // targeting a single trusted domain.
   script.textContent = `
-    window.print = function() {
-      if (window.trithaBrowser) window.trithaBrowser.print();
-    };
+    function hookPrint(win) {
+      if (!win) return;
+      try {
+        win.print = function() {
+          if (window.top && window.top.trithaBrowser) {
+            window.top.trithaBrowser.print();
+          }
+        };
+      } catch (e) {}
+    }
+
+    hookPrint(window);
+
+    // Hook existing iframes
+    document.querySelectorAll('iframe').forEach(ifr => {
+      hookPrint(ifr.contentWindow);
+      ifr.addEventListener('load', () => hookPrint(ifr.contentWindow));
+    });
+
+    // Watch for dynamically added iframes
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(m => {
+        m.addedNodes.forEach(node => {
+          if (node.tagName === 'IFRAME') {
+            hookPrint(node.contentWindow);
+            node.addEventListener('load', () => hookPrint(node.contentWindow));
+          } else if (node.querySelectorAll) {
+            node.querySelectorAll('iframe').forEach(ifr => {
+              hookPrint(ifr.contentWindow);
+              ifr.addEventListener('load', () => hookPrint(ifr.contentWindow));
+            });
+          }
+        });
+      });
+    });
+    
+    if (document.body || document.documentElement) {
+      observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
+    } else {
+      window.addEventListener('DOMContentLoaded', () => {
+        observer.observe(document.documentElement || document.body, { childList: true, subtree: true });
+      });
+    }
   `;
   target.appendChild(script);
   script.remove();
