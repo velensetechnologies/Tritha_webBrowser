@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut, dialog } = require('electron');
 const path = require('path');
 const fs   = require('fs');
 
@@ -524,6 +524,41 @@ app.whenReady().then(() => {
     }
   }
   if (!registered) console.warn('[Tritha] WARNING: No global shortcut could be registered');
+
+  // ── Escape key → exit confirmation dialog ─────────────────────────────────
+  globalShortcut.register('Escape', async () => {
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+    // Don't show the dialog if settings window is already open
+    if (settingsWindow && !settingsWindow.isDestroyed()) return;
+
+    console.log('[Tritha] Escape pressed — showing exit confirmation...');
+
+    // Temporarily exit kiosk so the native dialog can appear on top
+    const wasKiosk = mainWindow.isKiosk();
+    if (wasKiosk) mainWindow.setKiosk(false);
+
+    const { response } = await dialog.showMessageBox(mainWindow, {
+      type:    'question',
+      title:   'Exit Tritha',
+      message: 'Are you sure you want to exit?',
+      buttons: ['Yes, Exit', 'Cancel'],
+      defaultId: 1,       // Cancel is the default (safer)
+      cancelId:  1,
+      icon:    ICON_PATH,
+    });
+
+    if (response === 0) {
+      // User clicked "Yes, Exit"
+      console.log('[Tritha] Exit confirmed by user.');
+      isQuitting = true;
+      app.quit();
+    } else {
+      // User clicked "Cancel" — restore kiosk
+      console.log('[Tritha] Exit cancelled.');
+      if (wasKiosk) mainWindow.setKiosk(true);
+    }
+  });
+  console.log('[Tritha] Escape key registered — will prompt before exit.');
 
   // ── CRASH TEST SHORTCUTS (remove before production) ──────────────────────────
   // Ctrl+Shift+F5  → Hard-crash the renderer (tests render-process-gone recovery)
