@@ -526,32 +526,34 @@ app.whenReady().then(() => {
   if (!registered) console.warn('[Tritha] WARNING: No global shortcut could be registered');
 
   // ── Escape key → exit confirmation dialog ─────────────────────────────────
-  globalShortcut.register('Escape', async () => {
+  globalShortcut.register('Escape', () => {
     if (!mainWindow || mainWindow.isDestroyed()) return;
     // Don't show the dialog if settings window is already open
     if (settingsWindow && !settingsWindow.isDestroyed()) return;
 
     console.log('[Tritha] Escape pressed — showing exit confirmation...');
 
-    // Temporarily exit kiosk so the native dialog can appear on top
+    // Exit kiosk first so the dialog can appear on top
     const wasKiosk = mainWindow.isKiosk();
     if (wasKiosk) mainWindow.setKiosk(false);
 
-    const { response } = await dialog.showMessageBox(mainWindow, {
-      type:    'question',
-      title:   'Exit Tritha',
-      message: 'Are you sure you want to exit?',
-      buttons: ['Yes, Exit', 'Cancel'],
-      defaultId: 1,       // Cancel is the default (safer)
+    // Use sync dialog — avoids async race conditions with kiosk state
+    const response = dialog.showMessageBoxSync(mainWindow, {
+      type:      'question',
+      title:     'Exit Tritha',
+      message:   'Are you sure you want to exit?',
+      buttons:   ['Yes, Exit', 'Cancel'],
+      defaultId: 1,   // Cancel is the default (safer for accidental presses)
       cancelId:  1,
-      icon:    ICON_PATH,
+      icon:      ICON_PATH,
     });
 
     if (response === 0) {
-      // User clicked "Yes, Exit"
-      console.log('[Tritha] Exit confirmed by user.');
+      // User clicked "Yes, Exit" — destroy window and force-exit
+      console.log('[Tritha] Exit confirmed — quitting.');
       isQuitting = true;
-      app.quit();
+      mainWindow.destroy();   // close window immediately
+      app.exit(0);            // exit unconditionally (no close-event race)
     } else {
       // User clicked "Cancel" — restore kiosk
       console.log('[Tritha] Exit cancelled.');
