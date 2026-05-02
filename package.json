@@ -1,0 +1,92 @@
+{
+  "name": "tritha-browser",
+  "version": "1.0.0",
+  "description": "Dedicated browser for Tritha panel",
+  "author": {
+    "name": "Tritha",
+    "email": "support@tritha.cloud"
+  },
+  "homepage": "https://panel.tritha.cloud",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "cloud.tritha.browser",
+    "productName": "Tritha",
+    "asar": true,
+    "asarUnpack": [
+      "assets/**"
+    ],
+    "compression": "maximum",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "settings-preload.js",
+      "settings.html",
+      "loading.html",
+      "error.html",
+      "assets/**",
+      "!**/node_modules/.cache/**",
+      "!**/*.map",
+      "!**/*.md"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/tritha-icon-512.png",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/tritha-icon-512.png",
+      "category": "Network"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "icon": "assets/tritha-icon-512.png",
+      "category": "public.app-category.productivity"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": true,
+      "createDesktopShortcut": true,
+      "deleteAppDataOnUninstall": true
+    },
+    "electronDownload": {
+      "cache": ".electron-cache"
+    }
+  }
+}

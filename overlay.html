@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"/>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    overflow: hidden;
+    -webkit-app-region: no-drag;
+  }
+
+  body {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    /* Hidden by default — shown only on hover via IPC from main */
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  body.visible { opacity: 1; }
+
+  button {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease, background 0.15s ease;
+    outline: none;
+    -webkit-app-region: no-drag;
+  }
+
+  button:hover  { transform: scale(1.18); }
+  button:active { transform: scale(0.95); }
+
+  #settingsBtn {
+    background: rgba(55, 65, 90, 0.92);
+    color: #e2e8f0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  #settingsBtn:hover { background: rgba(80, 95, 130, 0.98); }
+
+  #closeBtn {
+    background: rgba(190, 35, 35, 0.92);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,80,80,0.2);
+  }
+  #closeBtn:hover { background: rgba(220, 45, 45, 1); }
+</style>
+</head>
+<body>
+  <button id="settingsBtn" title="Settings">⚙</button>
+  <button id="closeBtn"    title="Close Tritha">✕</button>
+
+  <script>
+    const api = window.overlayAPI;
+
+    // Show/hide driven by main process cursor polling
+    api.onShow(() => document.body.classList.add('visible'));
+    api.onHide(() => document.body.classList.remove('visible'));
+
+    document.getElementById('settingsBtn').addEventListener('click', () => api.openSettings());
+    document.getElementById('closeBtn').addEventListener('click',   () => api.closeApp());
+  </script>
+</body>
+</html>

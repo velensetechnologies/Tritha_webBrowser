@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tritha — Settings</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0d1117;
+    color: #e2e8f0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid #1e293b;
+    flex-shrink: 0;
+  }
+  .header-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #FF8C00, #E8400C);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .header h1 { font-size: 17px; font-weight: 700; color: #fff; }
+  .header p  { font-size: 12px; color: #64748b; margin-top: 1px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    padding: 12px 24px 0;
+    gap: 4px;
+    border-bottom: 1px solid #1e293b;
+    flex-shrink: 0;
+  }
+  .tab {
+    padding: 8px 16px;
+    border-radius: 8px 8px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: #64748b;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    transition: color .2s, background .2s;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab:hover { color: #cbd5e1; }
+  .tab.active { color: #f97316; border-bottom-color: #f97316; background: rgba(249,115,22,.08); }
+
+  /* Content */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+  .content::-webkit-scrollbar { width: 4px; }
+  .content::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Form fields */
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+  .field input {
+    width: 100%;
+    padding: 11px 14px;
+    background: #1a2235;
+    border: 1.5px solid #1e293b;
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color .2s;
+    outline: none;
+  }
+  .field input:focus { border-color: #f97316; }
+  .field .hint { font-size: 11px; color: #475569; margin-top: 6px; }
+
+  /* Printer list */
+  .printer-list { display: flex; flex-direction: column; gap: 8px; max-height: 230px; overflow-y: auto; padding-right: 2px; }
+  .printer-list::-webkit-scrollbar { width: 3px; }
+  .printer-list::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+  .printer-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #1e293b;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .printer-item:hover { background: #1a2235; border-color: #334155; }
+  .printer-item.selected { background: #1a2e4a; border-color: #f97316; }
+  .printer-item input[type=radio] { accent-color: #f97316; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+  .printer-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .badge-default { font-size: 10px; background: #22c55e; color: #000; padding: 2px 7px; border-radius: 20px; font-weight: 700; }
+  .empty { color: #475569; text-align: center; padding: 28px; font-size: 13px; line-height: 1.6; }
+
+  /* Close tab content */
+  .close-card {
+    background: #1a1f2e;
+    border: 1.5px solid #2d1a1a;
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+  }
+  .close-card .icon { font-size: 48px; margin-bottom: 14px; }
+  .close-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .close-card p { font-size: 13px; color: #64748b; line-height: 1.6; margin-bottom: 22px; }
+
+  /* Footer */
+  .footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 14px 24px;
+    border-top: 1px solid #1e293b;
+    flex-shrink: 0;
+  }
+
+  /* Buttons */
+  button {
+    padding: 10px 22px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: opacity .2s, transform .15s;
+  }
+  button:hover { opacity: .88; transform: translateY(-1px); }
+  button:active { transform: translateY(0); }
+  .btn-cancel  { background: #1e293b; color: #94a3b8; }
+  .btn-save    { background: #f97316; color: #fff; }
+  .btn-danger  { background: #dc2626; color: #fff; padding: 12px 28px; font-size: 14px; }
+
+  .status { font-size: 12px; margin-right: auto; align-self: center; }
+  .status.ok  { color: #22c55e; }
+  .status.err { color: #ef4444; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-icon">🖥</div>
+  <div>
+    <h1>Tritha Settings</h1>
+    <p>Configure your browser preferences</p>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('url')"   id="tab-url">🔗 URL</button>
+  <button class="tab"        onclick="switchTab('print')" id="tab-print">🖨 Printer</button>
+  <button class="tab"        onclick="switchTab('close')" id="tab-close">✕ Close App</button>
+</div>
+
+<!-- Content panels -->
+<div class="content">
+
+  <!-- URL Panel -->
+  <div class="panel active" id="panel-url">
+    <div class="field">
+      <label>Application URL</label>
+      <input type="url" id="urlInput" placeholder="https://example.com"/>
+      <div class="hint">The browser will always open this URL on launch. Changes take effect immediately.</div>
+    </div>
+  </div>
+
+  <!-- Printer Panel -->
+  <div class="panel" id="panel-print">
+    <div class="field">
+      <label>Select Printer</label>
+      <div class="printer-list" id="printerList"><div class="empty">Loading printers…</div></div>
+      <div class="hint">Tritha will print silently to the selected printer — no dialog will appear.</div>
+    </div>
+  </div>
+
+  <!-- Close Panel -->
+  <div class="panel" id="panel-close">
+    <div class="close-card">
+      <div class="icon">⚠️</div>
+      <h2>Close Tritha Browser</h2>
+      <p>This will quit the Tritha Browser completely.<br>Make sure all your work is saved before closing.</p>
+      <button class="btn-danger" onclick="closeApp()">✕ &nbsp;Close Tritha Browser</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <span class="status" id="statusMsg"></span>
+  <button class="btn-cancel" onclick="window.close()">Cancel</button>
+  <button class="btn-save"   onclick="saveAll()">Save Changes</button>
+</div>
+
+<script>
+let selectedPrinter = null;
+let currentTab = 'url';
+let printersLoaded = false;
+
+// ── Tab switching ──────────────────────────────────────────────────────
+function switchTab(name) {
+  currentTab = name;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'   + name).classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'print' && !printersLoaded) loadPrinters();
+}
+
+// ── Load current URL ───────────────────────────────────────────────────
+async function loadUrl() {
+  const url = await window.settingsAPI.getUrl();
+  document.getElementById('urlInput').value = url || '';
+}
+
+// ── Load printers ──────────────────────────────────────────────────────
+async function loadPrinters() {
+  printersLoaded = true;
+  const { printers, selected } = await window.settingsAPI.getPrinters();
+  selectedPrinter = selected;
+  const list = document.getElementById('printerList');
+
+  if (!printers.length) {
+    list.innerHTML = '<div class="empty">No printers found.<br>Make sure your printer is connected.</div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  printers.forEach(p => {
+    const item = document.createElement('div');
+    item.className = 'printer-item' + (p.name === selected ? ' selected' : '');
+    item.innerHTML = `
+      <input type="radio" name="printer" value="${p.name}" ${p.name === selected ? 'checked' : ''}>
+      <span class="printer-name">${p.name}</span>
+      ${p.isDefault ? '<span class="badge-default">Default</span>' : ''}`;
+    item.addEventListener('click', () => {
+      selectedPrinter = p.name;
+      document.querySelectorAll('.printer-item').forEach(el => el.classList.remove('selected'));
+      item.classList.add('selected');
+      item.querySelector('input').checked = true;
+    });
+    list.appendChild(item);
+  });
+}
+
+// ── Save all settings ─────────────────────────────────────────────────
+async function saveAll() {
+  const status = document.getElementById('statusMsg');
+  status.className = 'status';
+  status.textContent = '';
+
+  // Save URL
+  const urlVal = document.getElementById('urlInput').value.trim();
+  if (urlVal) {
+    const res = await window.settingsAPI.saveUrl(urlVal);
+    if (!res.success) { status.className = 'status err'; status.textContent = '⚠ Invalid URL'; return; }
+  }
+
+  // Save Printer
+  if (selectedPrinter) {
+    await window.settingsAPI.savePrinter(selectedPrinter, false);
+  }
+
+  status.className = 'status ok';
+  status.textContent = '✓ Saved!';
+  setTimeout(() => window.close(), 900);
+}
+
+// ── Close app ─────────────────────────────────────────────────────────
+async function closeApp() {
+  await window.settingsAPI.closeApp();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+window.settingsAPI.onInit(({ printAfter, selected }) => {
+  if (selected) selectedPrinter = selected;
+  if (printAfter) switchTab('print');
+});
+
+loadUrl();
+</script>
+</body>
+</html>
