@@ -1,5 +1,6 @@
 {
   "name": "tritha-browser",
+  "productName": "Tritha",
   "version": "1.0.0",
   "description": "Dedicated browser for Tritha panel",
   "author": {

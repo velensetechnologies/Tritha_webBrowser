@@ -3,6 +3,7 @@ const path = require('path');
 const fs   = require('fs');
 
 app.setName('Tritha');
+process.title = 'Tritha';  // renames process in Activity Monitor / Task Manager
 
 // ── Chromium performance flags ─────────────────────────────────────────────
 // Disable unused features to reduce RAM and CPU usage
@@ -222,12 +223,15 @@ function createWindow() {
     },
   });
 
-  // Override user-agent to look like standard Chrome.
-  // Electron's default UA contains "Electron/29.0.0" which some CDNs and servers
-  // detect and serve different (or broken) responses for assets like fonts.
-  const chromeUA = mainWindow.webContents.getUserAgent()
-    .replace(/\s*Electron\/[\d.]+/, '');   // strip "Electron/x.x.x" from UA
-  mainWindow.webContents.setUserAgent(chromeUA);
+  // Set user-agent: remove "Electron/x.x.x" and replace with "Tritha/1.0"
+  // This hides the Electron identity from servers and brands the browser correctly.
+  const trithaUA = mainWindow.webContents.getUserAgent()
+    .replace(/\s*Electron\/[\d.]+/, ' Tritha/1.0');
+  mainWindow.webContents.setUserAgent(trithaUA);
+
+  // Explicitly set the window title to Tritha (prevents "Electron" showing in
+  // window switchers, screen-sharing thumbnails, and macOS Mission Control).
+  mainWindow.setTitle('Tritha');
 
   mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
     const source = sourceId || 'unknown';
